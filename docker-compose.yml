@@ -1,0 +1,36 @@
+version: '3.9'
+services:
+  front:
+    image: csdevcore/daily-planner-front
+    build: ./front/
+    ports:
+      - 3000:3000
+    depends_on:
+      - back
+
+  back:
+    image: csdevcore/daily
+    build: ./DailyPlannerBack/DailyPlannerBack/
+    ports:
+      - 8000:8000
+    environment:
+      - ASPNETCORE_URLS=http://+:8000
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=dailyplanner
+      - DB_USER=program
+      - DB_PASSWORD=program
+    depends_on:
+      - db
+
+  db:
+    image: library/postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - ./postgres/:/docker-entrypoint-initdb.d/
+    ports:
+      - "5432:5432"

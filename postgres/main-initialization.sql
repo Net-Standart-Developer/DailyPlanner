@@ -1,0 +1,5 @@
+CREATE ROLE program WITH PASSWORD 'program';
+ALTER ROLE program WITH LOGIN;
+
+CREATE DATABASE dailyplanner;
+GRANT ALL PRIVILEGES ON DATABASE dailyplanner TO program;
