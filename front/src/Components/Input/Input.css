@@ -1,0 +1,27 @@
+.Input{
+    background-color: var(--main-back-color);
+    border: var(--main-border);
+    border-radius: var(--border-radius);
+    color: var(--main-text-color);
+
+    padding: var(--padding);
+    margin: var(--margin);
+
+    
+}
+
+.Input input{
+    background-color: var(--main-back-color);
+    border: var(--main-back-color);
+    color: var(--main-text-color);
+
+    font-size: var(--text-size);
+
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    outline:none;
+    text-align: center;
+    font-size: var(--text-size);
+}

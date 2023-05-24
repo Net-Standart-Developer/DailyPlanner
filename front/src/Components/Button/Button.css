@@ -1,0 +1,17 @@
+.button{
+    background-color: var(--main-back-color);
+    border: var(--main-border);
+    border-radius: var(--border-radius);
+    color: var(--main-text-color);
+
+    padding: var(--padding);
+    margin: var(--margin);
+}
+
+.button input[type="button"]{
+    background-color: var(--main-back-color);
+    border: var(--main-back-color);
+    color: var(--main-text-color);
+
+    font-size: var(--text-size);
+}

@@ -1,5 +1,31 @@
+:root{
+  --main-text-color:#000000;
+  --add-text-color:#ffffff;
+
+  --main-back-color:#f4f4f4;
+  --add-back-color:#c8c8c8;
+
+  --main-border-color:#bebebe;
+  --add-border-color:#ffffff;
+
+  --main-border:3px solid var(--main-border-color);
+  --add-border:3px solid var(--add-border-color);
+
+  --text-size:1em;
+
+  --padding:10px;
+  --margin:10px;
+  --border-radius:25px;
+}
+
 .App {
+  box-sizing: border-box;
+
   text-align: center;
+  color: var(--main-text-color);
+  font-size: var(--text-size);
+  padding: 0;
+  margin: 0;
 }
 
 .App-logo {
