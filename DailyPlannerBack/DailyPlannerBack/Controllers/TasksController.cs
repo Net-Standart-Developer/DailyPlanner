@@ -50,8 +50,8 @@ namespace DailyPlannerBack.Controllers
             {
                 Title = createVM.Title,
                 Message = createVM.Message,
-                Start = createVM.Start,
-                End = createVM.End,
+                Start = createVM.Start.ToUniversalTime(),
+                End = createVM.End.ToUniversalTime(),
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -59,6 +59,48 @@ namespace DailyPlannerBack.Controllers
             db.SaveChanges();
 
             return Ok(task);
+        }
+
+        [HttpPut("[Action]")]
+        public ActionResult EditTask(EditTaskViewModel editVM)
+        {
+            var task = db.Tasks.FirstOrDefault(task => task.Id == editVM.Id);
+            if(task == null)
+            {
+                return BadRequest("Нет задачи с таким id");
+            }
+
+            task.Message = editVM.Message;
+            task.Title = editVM.Title;
+            task.Start = editVM.Start.ToUniversalTime();
+            task.End = editVM.End.ToUniversalTime();
+
+            db.SaveChanges();
+            return Ok();
+        }
+
+        [HttpDelete("[Action]/{id}")]
+        public ActionResult DeleteTask(Guid id)
+        {
+            var task = db.Tasks.FirstOrDefault(task => task.Id == id);
+            if(task == null)
+            {
+                return BadRequest("Нет задачи с таким id");
+            }
+
+            db.Tasks.Remove(task);
+            db.SaveChanges();
+
+            return Ok(task);
+        }
+
+        [HttpDelete("[Action]")]
+        public ActionResult DeleteAllTasks()
+        {
+            db.Tasks.RemoveRange(db.Tasks);
+            db.SaveChanges();
+
+            return Ok();
         }
     }
 }
