@@ -1,0 +1,17 @@
+.create-task{
+    margin: 0 20%;
+}
+
+.horizontal{
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+}
+
+.item{
+    margin-left: 15px;
+}
+
+.back{
+    margin: 0 auto;
+}

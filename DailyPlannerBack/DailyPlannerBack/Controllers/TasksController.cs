@@ -43,6 +43,18 @@ namespace DailyPlannerBack.Controllers
             return Ok(tasks);
         }
 
+        [HttpGet("[Action]/{id}")]
+        public ActionResult GetTask(Guid id)
+        {
+            var task = db.Tasks.FirstOrDefault(task => task.Id == id);
+            if(task == null)
+            {
+                return BadRequest("Нет задачи с таким id");
+            }
+
+            return Ok(task);
+        }
+
         [HttpPost("[Action]")]
         public ActionResult CreateTask(CreateTaskViewModel createVM)
         {
