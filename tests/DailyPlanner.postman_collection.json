@@ -1,0 +1,504 @@
+{
+	"info": {
+		"_postman_id": "f49fdb10-f9da-4ec5-a760-7170a34d8496",
+		"name": "DailyPlanner",
+		"description": "# ⛓️ Get started here\n\nPostman allows you to test your APIs using simple Javascript code. You can evaluate your response body, headers, cookies, and more using the [ChaiJS BDD](https://www.chaijs.com/api/bdd/) syntax.\n\nThis template guides you through the process of setting up an integration test to ensure that all individual components of an API function together seamlessly.\n\nThe API under test in this collection includes three endpoints for registering and receiving a token, accessing your unique generated name, and unregistering a token:\n\n- POST `/register`\n- POST `/unregister`\n- GET `/my-name`\n    \n\nBy setting up requests in the order of the operation, we can test the flow of data to and from the endpoints and ensure they work together as expected. We also verify that the data persists between requests on the back end.\n\n## 🔖 **How to use this template**\n\n**Step 1:** Check out the requests' documentation to learn more about -\n\n- what each request is meant to do.\n- the tests we've added against each one.\n    \n\n**Step 2:** Run this collection by clicking on \"Run\".\n\n<img src=\"https://content.pstmn.io/84019b0f-69c8-4c5f-98b9-2c90a6f9a0b1/Y29sbGVjdGlvbi1ydW5uZXItYnV0dG9uLmpwZWc=\" alt=\"\" height=\"103\" width=\"266\">\n\n**Step 3:** To customize this template, replace the request URLs with your API endpoints and add or edit the tests if needed.\n\n## ℹ️ Resources\n\n[Scripting in Postman](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/)\n\n[Test script examples](https://learning.postman.com/docs/writing-scripts/script-references/test-examples/)\n\n[Postman Sandbox API reference](https://learning.postman.com/docs/sending-requests/grpc/postman-sandbox-api/#writing-assertions)\n\n[Using the Collection Runner](https://learning.postman.com/docs/collections/running-collections/intro-to-collection-runs/)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16835656"
+	},
+	"item": [
+		{
+			"name": "BackTests",
+			"item": [
+				{
+					"name": "Удалить все задачи",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Удалить задачи\", () => {\r",
+									"    pm.response.to.have.status(200)\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{BACK_HOST}}:{{BACK_PORT}}/Tasks/DeleteAllTasks",
+							"protocol": "http",
+							"host": [
+								"{{BACK_HOST}}"
+							],
+							"port": "{{BACK_PORT}}",
+							"path": [
+								"Tasks",
+								"DeleteAllTasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создать задачу",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Создать задачу\", () => {\r",
+									"    pm.response.to.have.status(200)\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.contains(\"application/json\");\r",
+									"\r",
+									"    const title = pm.collectionVariables.get(\"CHECK_TITLE\")\r",
+									"    const message = pm.collectionVariables.get(\"CHECK_MESSAGE\")\r",
+									"    const startDate = pm.collectionVariables.get(\"CHECK_START_DATE\")\r",
+									"    let start = new Date(startDate)\r",
+									"\r",
+									"    const endDate = pm.collectionVariables.get(\"CHECK_END_DATE\")\r",
+									"    let end = new Date(endDate)\r",
+									"\r",
+									"    const response = pm.response.json();\r",
+									"\r",
+									"    pm.expect(response.title).to.be.eq(title)\r",
+									"    pm.expect(response.message).to.be.eq(message)\r",
+									"    pm.expect(new Date(response.start).toISOString()).to.be.eq(start.toISOString())\r",
+									"    pm.expect(new Date(response.end).toISOString()).to.be.eq(end.toISOString())\r",
+									"    \r",
+									"    pm.collectionVariables.set(\"CHECK_CREATED_TASK_ID\", response.id)\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Title\": \"{{CHECK_TITLE}}\",\r\n    \"Message\": \"{{CHECK_MESSAGE}}\",\r\n    \"START\": \"{{CHECK_START_DATE}}\",\r\n    \"END\": \"{{CHECK_END_DATE}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{BACK_HOST}}:{{BACK_PORT}}/Tasks/CreateTask",
+							"protocol": "http",
+							"host": [
+								"{{BACK_HOST}}"
+							],
+							"port": "{{BACK_PORT}}",
+							"path": [
+								"Tasks",
+								"CreateTask"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получить задачи",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получить задачи\", () => {\r",
+									"    pm.response.to.have.status(200)\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.contains(\"application/json\");\r",
+									"\r",
+									"    const createdTaskId = pm.collectionVariables.get(\"CHECK_CREATED_TASK_ID\")\r",
+									"\r",
+									"    const response = pm.response.json();\r",
+									"    const title = pm.collectionVariables.get(\"CHECK_TITLE\")\r",
+									"    const message = pm.collectionVariables.get(\"CHECK_MESSAGE\")\r",
+									"    const startDate = pm.collectionVariables.get(\"CHECK_START_DATE\")\r",
+									"    let start = new Date(startDate)\r",
+									"    const endDate = pm.collectionVariables.get(\"CHECK_END_DATE\")\r",
+									"    let end = new Date(endDate)\r",
+									"\r",
+									"    pm.expect(response).to.be.an(\"array\")\r",
+									"\r",
+									"    const task = _.find(response, { \"id\": createdTaskId })\r",
+									"    pm.expect(task.title).to.be.eq(title)\r",
+									"    pm.expect(task.message).to.be.eq(message)\r",
+									"    pm.expect(new Date(task.start).toISOString()).to.be.eq(start.toISOString())\r",
+									"    pm.expect(new Date(task.end).toISOString()).to.be.eq(end.toISOString())\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{BACK_HOST}}:{{BACK_PORT}}/Tasks/GetTasks",
+							"protocol": "http",
+							"host": [
+								"{{BACK_HOST}}"
+							],
+							"port": "{{BACK_PORT}}",
+							"path": [
+								"Tasks",
+								"GetTasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Редактировать задачу (bad id)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Редактировать задачу с неправильным id\", () => {\r",
+									"    pm.response.to.have.status(400)\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Id\":\"{{CHECK_BAD_ID}}\",\r\n    \"Title\": \"{{CHECK_TITLE}}\",\r\n    \"Message\": \"{{CHECK_MESSAGE}}\",\r\n    \"START\": \"{{CHECK_START_DATE}}\",\r\n    \"END\": \"{{CHECK_END_DATE}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{BACK_HOST}}:{{BACK_PORT}}/Tasks/EditTask",
+							"protocol": "http",
+							"host": [
+								"{{BACK_HOST}}"
+							],
+							"port": "{{BACK_PORT}}",
+							"path": [
+								"Tasks",
+								"EditTask"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Редактировать задачу (right id)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Редактировать задачу с правильным id\", () => {\r",
+									"    pm.response.to.have.status(200)\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Id\":\"{{CHECK_CREATED_TASK_ID}}\",\r\n    \"Title\": \"{{CHECK_NEW_TITLE}}\",\r\n    \"Message\": \"{{CHECK_NEW_MESSAGE}}\",\r\n    \"START\": \"{{CHECK_NEW_START_DATE}}\",\r\n    \"END\": \"{{CHECK_NEW_END_DATE}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{BACK_HOST}}:{{BACK_PORT}}/Tasks/EditTask",
+							"protocol": "http",
+							"host": [
+								"{{BACK_HOST}}"
+							],
+							"port": "{{BACK_PORT}}",
+							"path": [
+								"Tasks",
+								"EditTask"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Проверка изменений 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получить задачи\", () => {\r",
+									"    pm.response.to.have.status(200)\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.contains(\"application/json\");\r",
+									"\r",
+									"    const createdTaskId = pm.collectionVariables.get(\"CHECK_CREATED_TASK_ID\")\r",
+									"\r",
+									"    const response = pm.response.json();\r",
+									"    const title = pm.collectionVariables.get(\"CHECK_NEW_TITLE\")\r",
+									"    const message = pm.collectionVariables.get(\"CHECK_NEW_MESSAGE\")\r",
+									"    const startDate = pm.collectionVariables.get(\"CHECK_NEW_START_DATE\")\r",
+									"    let start = new Date(startDate)\r",
+									"    const endDate = pm.collectionVariables.get(\"CHECK_NEW_END_DATE\")\r",
+									"    let end = new Date(endDate)\r",
+									"\r",
+									"    pm.expect(response).to.be.an(\"array\")\r",
+									"\r",
+									"    const task = _.find(response, { \"id\": createdTaskId })\r",
+									"    pm.expect(task.title).to.be.eq(title)\r",
+									"    pm.expect(task.message).to.be.eq(message)\r",
+									"    pm.expect(new Date(task.start).toISOString()).to.be.eq(start.toISOString())\r",
+									"    pm.expect(new Date(task.end).toISOString()).to.be.eq(end.toISOString())\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{BACK_HOST}}:{{BACK_PORT}}/Tasks/GetTasks",
+							"protocol": "http",
+							"host": [
+								"{{BACK_HOST}}"
+							],
+							"port": "{{BACK_PORT}}",
+							"path": [
+								"Tasks",
+								"GetTasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить задачу (bad id)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Удалить несуществующую задачу\", () => {\r",
+									"    pm.response.to.have.status(400)\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{BACK_HOST}}:{{BACK_PORT}}/Tasks/DeleteTask/{{CHECK_BAD_ID}}",
+							"protocol": "http",
+							"host": [
+								"{{BACK_HOST}}"
+							],
+							"port": "{{BACK_PORT}}",
+							"path": [
+								"Tasks",
+								"DeleteTask",
+								"{{CHECK_BAD_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить задачу (right id)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Удалить существующую задачу\", () => {\r",
+									"    pm.response.to.have.status(200)\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{BACK_HOST}}:{{BACK_PORT}}/Tasks/DeleteTask/{{CHECK_CREATED_TASK_ID}}",
+							"protocol": "http",
+							"host": [
+								"{{BACK_HOST}}"
+							],
+							"port": "{{BACK_PORT}}",
+							"path": [
+								"Tasks",
+								"DeleteTask",
+								"{{CHECK_CREATED_TASK_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Проверка изменений 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получить задачи\", () => {\r",
+									"    pm.response.to.have.status(200)\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.contains(\"application/json\");\r",
+									"\r",
+									"    const response = pm.response.json()\r",
+									"\r",
+									"    pm.expect(response).to.be.an(\"array\")\r",
+									"    pm.expect(response).to.be.empty\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{BACK_HOST}}:{{BACK_PORT}}/Tasks/GetTasks",
+							"protocol": "http",
+							"host": [
+								"{{BACK_HOST}}"
+							],
+							"port": "{{BACK_PORT}}",
+							"path": [
+								"Tasks",
+								"GetTasks"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.collectionVariables.set(\"CHECK_TITLE\",\"моя задача 1\")",
+							"pm.collectionVariables.set(\"CHECK_MESSAGE\",\"купить хлеба\")",
+							"pm.collectionVariables.set(\"CHECK_START_DATE\",\"2023-05-24T12:01:13.4774492+03:00\")",
+							"pm.collectionVariables.set(\"CHECK_END_DATE\",\"2023-05-27T12:01:13.4774492+03:00\")",
+							"",
+							"pm.collectionVariables.set(\"CHECK_BAD_ID\", \"000c69e8-9018-4297-8cb8-46f2a07b571e\")",
+							"",
+							"pm.collectionVariables.set(\"CHECK_NEW_TITLE\", \"редактированная задача 1\")",
+							"pm.collectionVariables.set(\"CHECK_NEW_MESSAGE\", \"купить молоко\")",
+							"pm.collectionVariables.set(\"CHECK_NEW_START_DATE\",\"2023-06-24T12:01:13.4774492+03:00\")",
+							"pm.collectionVariables.set(\"CHECK_NEW_END_DATE\",\"2023-06-27T12:01:13.4774492+03:00\")"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "baseUrl",
+			"value": "https://postman-integration-testing.glitch.me/"
+		},
+		{
+			"key": "CHECK_TITLE",
+			"value": ""
+		},
+		{
+			"key": "CHECK_MESSAGE",
+			"value": ""
+		},
+		{
+			"key": "CHECK_START_DATE",
+			"value": ""
+		},
+		{
+			"key": "CHECK_END_DATE",
+			"value": ""
+		},
+		{
+			"key": "CHECK_CREATED_TASK_ID",
+			"value": ""
+		},
+		{
+			"key": "CHECK_NEW_TITLE",
+			"value": ""
+		},
+		{
+			"key": "CHECK_NEW_MESSAGE",
+			"value": ""
+		},
+		{
+			"key": "CHECK_NEW_START_DATE",
+			"value": ""
+		},
+		{
+			"key": "CHECK_NEW_END_DATE",
+			"value": ""
+		},
+		{
+			"key": "CHECK_BAD_ID",
+			"value": ""
+		}
+	]
+}
